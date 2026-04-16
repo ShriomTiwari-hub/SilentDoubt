@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Check Answer — #{{ q.qid }}{% endblock %}
+{% block content %}
+
+<div class="center-wrap">
+  <div class="card">
+    <div class="doubt-meta">
+      <span class="tag tag-{{ q.catg }}">{{ q.catg }}</span>
+      <span class="subj-tag">{{ q.subj }}</span>
+      <span class="mono" style="color:var(--muted);font-size:0.75rem;">ID #{{ q.qid }}</span>
+    </div>
+
+    <h3 style="margin-top:1rem;">Your Doubt</h3>
+    <p class="doubt-text">{{ q.qtxt }}</p>
+    {% if q.img_path %}
+    <div class="doubt-image-wrapper" style="margin-bottom: 1rem;">
+      <a href="{{ url_for('static', filename=q.img_path) }}" target="_blank">
+        <img src="{{ url_for('static', filename=q.img_path) }}" alt="Attached Image" class="doubt-image">
+      </a>
+    </div>
+    {% endif %}
+
+    {% if resp %}
+      <div class="answer-box">
+        <div class="answer-header">
+          <span>👨‍🏫 Teacher's Answer</span>
+          <span class="mono" style="font-size:0.75rem;color:var(--muted);">by {{ resp.tid }}</span>
+        </div>
+        <p>{{ resp.resp }}</p>
+      </div>
+
+      {% if fb_done %}
+        <div class="fb-done">✓ Feedback submitted. Thanks!</div>
+      {% else %}
+        <div class="feedback-section">
+          <h4>Was this helpful?</h4>
+          <form action="/feedback/{{ q.qid }}" method="POST">
+            <div class="stars-wrap">
+              {% for i in range(1,6) %}
+                <input type="radio" name="stars" id="s{{ i }}" value="{{ i }}" {% if i==3 %}checked{% endif %}>
+                <label for="s{{ i }}">★</label>
+              {% endfor %}
+            </div>
+            <textarea name="cmt" placeholder="Any comments? (optional)" rows="2" style="margin-top:1rem;"></textarea>
+            <button type="submit" class="btn-primary" style="margin-top:0.75rem;">Submit Feedback</button>
+          </form>
+        </div>
+      {% endif %}
+
+    {% else %}
+      <div class="pending-box">
+        <span class="pulse-dot"></span>
+        <p>Not answered yet. Check back soon.</p>
+      </div>
+    {% endif %}
+
+    <a href="/" class="btn-ghost" style="margin-top:1.5rem;display:inline-block;">&larr; Back Home</a>
+  </div>
+</div>
+
+{% endblock %}

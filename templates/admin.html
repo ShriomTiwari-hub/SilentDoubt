@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+
+<div class="panel-header">
+  <h2>Analytics Dashboard</h2>
+  <span class="mono" style="color:var(--muted);">{{ usr }}</span>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi-card">
+    <span class="kpi-num">{{ data.total }}</span>
+    <span class="kpi-label">Total Doubts</span>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-num">{{ data.answered }}</span>
+    <span class="kpi-label">Answered</span>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-num">
+      {% if data.total > 0 %}{{ ((data.answered / data.total)*100)|round|int }}%{% else %}0%{% endif %}
+    </span>
+    <span class="kpi-label">Answer Rate</span>
+  </div>
+  <div class="kpi-card">
+    <span class="kpi-num">{{ data.avg_stars }} ★</span>
+    <span class="kpi-label">Avg Rating</span>
+  </div>
+</div>
+
+<div class="dash-grid">
+  <div class="card">
+    <h3>Doubt Categories</h3>
+    <canvas id="catChart" height="200"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>Teacher Activity</h3>
+    {% if data.teachers %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Teacher</th>
+          <th>Answered</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in data.teachers %}
+        <tr>
+          <td>{{ t.tid }}</td>
+          <td>{{ t.cnt }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="hint">No responses yet</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card" style="margin-top:1.5rem; border: 1px solid #f85149;">
+  <h3 style="color:#f85249;">Cybersecurity & Moderation</h3>
+
+  <div class="two-col" style="margin-top: 1rem;">
+    <div>
+      <h4 style="margin-bottom:0.5rem; color:var(--muted); font-size:0.9rem;">Restrict Access</h4>
+      <form action="/admin/ban" method="POST" style="display:flex; gap:0.5rem;">
+        <select name="btype"
+          style="padding:0.5rem; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:4px;">
+          <option value="ip">Student IP</option>
+          <option value="teacher">Teacher ID</option>
+        </select>
+        <input type="text" name="bval" placeholder="e.g. 192.168.1.1" required
+          style="padding:0.5rem; background:var(--bg); border:1px solid var(--border); color:var(--text); border-radius:4px; flex:1;">
+        <button type="submit" class="btn-primary"
+          style="padding:0.5rem 1rem; background:#f85149; border-color:#f85149;">Ban</button>
+      </form>
+    </div>
+
+    <div>
+      <h4 style="margin-bottom:0.5rem; color:var(--muted); font-size:0.9rem;">Active Restrictions</h4>
+      {% if bans %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Value</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bans %}
+          <tr>
+            <td>{{ b.btype }}</td>
+            <td class="mono">{{ b.bval }}</td>
+            <td>
+              <form action="/admin/unban" method="POST" style="display:inline;">
+                <input type="hidden" name="btype" value="{{ b.btype }}">
+                <input type="hidden" name="bval" value="{{ b.bval }}">
+                <button type="submit" style="background:transparent; border:none; color:#58a6ff; cursor:pointer;"
+                  title="Unban">✕ Revoke</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p class="hint">No active bans.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:1.5rem;">
+  <h3>All Doubts (Admin View)</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Subject</th>
+        <th>Category</th>
+        <th>Source IP</th>
+        <th>Doubt</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for q in all_q %}
+      <tr>
+        <td class="mono">{{ q.qid }}</td>
+        <td>{{ q.subj }}</td>
+        <td><span class="tag tag-{{ q.catg }}">{{ q.catg }}</span></td>
+        <td class="mono" style="color:var(--accent);">{{ q.ip_addr or 'Unknown' }}</td>
+        <td style="max-width:300px;">{{ q.qtxt[:80] }}{% if q.qtxt|length > 80 %}...{% endif %}</td>
+        <td>{% if q.answered %}<span style="color:#3fb950;">✓ Done</span>{% else %}<span
+            style="color:#f85149;">Pending</span>{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const catData = JSON.parse('{{ data.cats | tojson | safe }}');
+  const chartLabels = catData.map(c => c[0]);
+  const chartVals = catData.map(c => c[1]);
+
+  new Chart(document.getElementById("catChart"), {
+    type: "bar",
+    data: {
+      labels: chartLabels,
+      datasets: [{
+        label: "Doubts",
+        data: chartVals,
+        backgroundColor: ["#6C63FF", "#3fb950", "#f0883e", "#58a6ff"],
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { ticks: { color: "#8b949e" }, grid: { color: "#21262d" } },
+        x: { ticks: { color: "#8b949e" }, grid: { display: false } }
+      }
+    }
+  });
+</script>
+
+{% endblock %}

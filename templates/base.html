@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}SilentDoubt{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar">
+  <a href="/" class="logo">Silent<span>Doubt</span></a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    {% if session.get('usr') %}
+      {% if session.get('role') == 'admin' %}
+        <a href="/admin">Dashboard</a>
+      {% else %}
+        <a href="/teacher">Teacher Panel</a>
+      {% endif %}
+      <a href="/logout" class="btn-ghost">Logout</a>
+    {% else %}
+      <a href="/login" class="btn-teacher">👨‍🏫 Teacher</a>
+      <a href="/login?role=admin" class="btn-admin">🛡️ Admin</a>
+    {% endif %}
+  </div>
+</nav>
+
+<main>
+{% with msgs = get_flashed_messages() %}
+  {% if msgs %}
+    {% for m in msgs %}
+      <div class="flash">{{ m }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+</main>
+
+<!-- idk if we need this footer anymore but keeping it just in case...
+<div class="footer-bottom">
+   <p>Made with python</p>
+</div>
+-->
+<footer>
+  <p>SilentDoubt &mdash; project in progress</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Teacher Panel{% endblock %}
+{% block content %}
+
+<div class="panel-header">
+  <h2>Teacher Panel</h2>
+  <span class="mono" style="color:var(--muted);">logged in as {{ usr }}</span>
+</div>
+
+<div class="filter-bar">
+  <span>Filter:</span>
+  <a href="/teacher?cat=all" class="tag {% if catf=='all' %}active{% endif %}">All</a>
+  <a href="/teacher?cat=concept" class="tag tag-concept {% if catf=='concept' %}active{% endif %}">Concept</a>
+  <a href="/teacher?cat=num" class="tag tag-num {% if catf=='num' %}active{% endif %}">Numerical</a>
+  <a href="/teacher?cat=exam" class="tag tag-exam {% if catf=='exam' %}active{% endif %}">Exam</a>
+  <a href="/teacher?cat=misc" class="tag tag-misc {% if catf=='misc' %}active{% endif %}">Misc</a>
+</div>
+
+{% if doubts %}
+  <div class="doubt-list">
+    {% for d in doubts %}
+    <div class="doubt-item">
+      <div class="doubt-top">
+        <span class="tag tag-{{ d.catg }}">{{ d.catg }}</span>
+        <span class="subj-tag">{{ d.subj }}</span>
+        <span class="mono" style="font-size:0.72rem;color:var(--muted);">#{{ d.qid }} &middot; {{ d.ts }}</span>
+      </div>
+      <p class="doubt-text">{{ d.qtxt }}</p>
+      {% if d.img_path %}
+      <div class="doubt-image-wrapper" style="margin-bottom: 1rem;">
+        <a href="{{ url_for('static', filename=d.img_path) }}" target="_blank">
+          <img src="{{ url_for('static', filename=d.img_path) }}" alt="Attached Image" class="doubt-image">
+        </a>
+      </div>
+      {% endif %}
+      <form action="/answer/{{ d.qid }}" method="POST" class="answer-form">
+        <textarea name="resp" rows="3" placeholder="Write your answer here..."></textarea>
+        <button type="submit" class="btn-primary sm">Post Answer</button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <p>🎉 No pending doubts right now.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

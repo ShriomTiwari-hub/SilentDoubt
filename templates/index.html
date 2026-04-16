@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}SilentDoubt — Ask Anonymously{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-badge">🔒 100% Anonymous</div>
+  <h1>Ask anything.<br><span class="accent">Without fear.</span></h1>
+  <p class="hero-sub">No name. No judgment. Just answers.<br>Your doubt stays yours.</p>
+</section>
+
+<div class="two-col">
+
+  <div class="card form-card">
+    <div class="card-tab active-tab">📝 Submit a Doubt</div>
+    <form action="/submit" method="POST" enctype="multipart/form-data">
+      <div class="field">
+        <label>Your Subject</label>
+        <select name="subj">
+          <option value="Mathematics">Mathematics</option>
+          <option value="Physics">Physics</option>
+          <option value="Chemistry">Chemistry</option>
+          <option value="Computer Science">Computer Science</option>
+          <option value="Biology">Biology</option>
+          <option value="Economics">Economics</option>
+          <option value="General">General / Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Your Doubt</label>
+        <textarea name="qtxt" rows="4" placeholder="ask anything"></textarea>
+      </div>
+      <div class="field">
+        <label>Attach Image (Optional)</label>
+        <input type="file" name="img" accept="image/*" class="file-input">
+      </div>
+      <button type="submit" class="btn-primary pulse">
+        Submit Anonymously &rarr;
+      </button>
+      <p class="hint">Your identity is never stored. Ever.</p>
+    </form>
+  </div>
+
+  <div class="card check-card">
+    <div class="card-tab check-tab">🔍 Check Your Answer</div>
+    <p style="color:var(--muted);font-size:0.88rem;margin-bottom:1.25rem;line-height:1.6;">
+      Already submitted a doubt? Enter your Doubt ID below to see if a teacher has answered it.
+    </p>
+    <form action="/lookup" method="POST">
+      <div class="field">
+        <label>Your Doubt ID</label>
+        <input type="number" name="qid" placeholder="e.g. 5" min="1" required>
+      </div>
+      <button type="submit" class="btn-check">
+        Check Answer &rarr;
+      </button>
+    </form>
+
+    <div class="id-reminder">
+      <span class="id-icon">💡</span>
+      <p>Your Doubt ID was shown right after you submitted. It's just a number like <strong>#3</strong> or <strong>#7</strong>.</p>
+    </div>
+  </div>
+
+</div>
+
+<div class="features">
+  <div class="feat-card">
+    <span class="feat-icon">🧠</span>
+    <h3>Auto-Classified</h3>
+    <p>Your doubt gets tagged as conceptual, numerical, exam-related or misconception</p>
+  </div>
+  <div class="feat-card">
+    <span class="feat-icon">👨‍🏫</span>
+    <h3>Teacher Responds</h3>
+    <p>Real teachers see your doubt and write back — no AI nonsense</p>
+  </div>
+  <div class="feat-card">
+    <span class="feat-icon">📊</span>
+    <h3>Insights Generated</h3>
+    <p>Your doubt helps the whole class — patterns become teaching improvements</p>
+  </div>
+</div>
+
+{% endblock %}

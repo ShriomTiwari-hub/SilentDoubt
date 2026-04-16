@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Doubt Submitted{% endblock %}
+{% block content %}
+
+<div class="center-wrap">
+  <div class="card success-card">
+    <div class="success-icon">✓</div>
+    <h2>Doubt Submitted!</h2>
+    <p>Your question is in the queue. A teacher will respond soon.</p>
+    <p class="mono">Your Doubt ID: <strong>#{{ qid }}</strong></p>
+    <p class="hint">Save this ID to check your answer later</p>
+
+    <a href="/check/{{ qid }}" class="btn-primary" style="margin-top:1.5rem;display:inline-block;">Check for Answer</a>
+    <a href="/" class="btn-ghost" style="margin-top:0.75rem;display:inline-block;">Ask Another</a>
+  </div>
+</div>
+
+{% endblock %}

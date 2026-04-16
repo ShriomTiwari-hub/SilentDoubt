@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Login — SilentDoubt{% endblock %}
+{% block content %}
+
+<div class="center-wrap">
+  <div class="card login-card">
+
+    {% if request.args.get('role') == 'admin' %}
+    <div class="login-badge admin-badge">🛡️ Admin Login</div>
+    <h2>Admin Dashboard</h2>
+    <p class="hint" style="margin-bottom:1.25rem;">Use your admin credentials to access analytics</p>
+    {% else %}
+    <div class="login-badge teacher-badge">👨‍🏫 Teacher Login</div>
+    <h2>Teacher Panel</h2>
+    <p class="hint" style="margin-bottom:1.25rem;">Students don't need to log in</p>
+    {% endif %}
+
+    <form action="/login" method="POST">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" name="usr" placeholder="username" autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" name="pw" placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%;margin-top:0.5rem;">Login &rarr;</button>
+    </form>
+
+    <div class="creds-hint">
+      <p class="hint">Demo credentials:</p>
+      <p class="hint mono">hariom / 1234 &nbsp;|&nbsp; admin / 1234</p>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
